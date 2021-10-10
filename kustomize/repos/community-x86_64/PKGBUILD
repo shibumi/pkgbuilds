@@ -1,0 +1,58 @@
+# Maintainer: Christian Rebischke <chris.rebischke@archlinux.org>
+# Maintainer: Daurnimator <daurnimator@archlinux.org>
+
+pkgname=kustomize
+pkgver=4.4.0
+pkgrel=1
+pkgdesc="Template-free customization of Kubernetes YAML manifests"
+arch=('x86_64')
+url="https://github.com/kubernetes-sigs/kustomize"
+license=('Apache')
+makedepends=('go')
+depends=('glibc')
+optdepends=('helm')
+source=("https://github.com/kubernetes-sigs/kustomize/archive/kustomize/v${pkgver}/${pkgname}-${pkgver}.tar.gz")
+sha512sums=('adc316f946df7bc8ed4a43af70f1517ccdd98c89912b808918ca0e70ad2303cfa1ea32f68643a8aa9c65bd31f85b6ba6fc4e3fafab936636b60a1efff11a3ae6')
+b2sums=('35762ef1a4ad85fc0d0f9d813fbbcde7ada3247d31ad962daa1190a3698b8f772e244ca98a3f23b48f2b7a228d48f245470339e8194be09f58b2057f8a00d7bb')
+
+build(){
+  cd "kustomize-kustomize-v${pkgver}/kustomize"
+
+  export CGO_LDFLAGS="${LDFLAGS}"
+  export CGO_CFLAGS="${CFLAGS}"
+  export CGO_CPPFLAGS="${CPPFLAGS}"
+  export CGO_CXXFLAGS="${CXXFLAGS}"
+  go build \
+    -trimpath \
+    -buildmode=pie \
+    -mod=readonly \
+    -modcacherw \
+    -ldflags " \
+      -X sigs.k8s.io/kustomize/api/provenance.version=${pkgver} \
+      -X sigs.k8s.io/kustomize/api/provenance.buildDate=$(date -u +'%Y-%m-%dT%H:%M:%SZ' --date=@${SOURCE_DATE_EPOCH}) \
+      -extldflags ${LDFLAGS}" \
+    .
+}
+
+check(){
+  cd "kustomize-kustomize-v${pkgver}/kustomize"
+
+  go test ./...
+}
+
+package(){
+  cd "kustomize-kustomize-v${pkgver}/kustomize"
+
+  # install completions
+  mkdir -p "${pkgdir}/usr/share/bash-completion/completions"
+  ./kustomize completion bash >  "${pkgdir}/usr/share/bash-completion/completions/kustomize"
+  mkdir -p "${pkgdir}/usr/share/zsh/site-functions/"
+  ./kustomize completion zsh >  "${pkgdir}/usr/share/zsh/site-functions/_kustomize"
+  mkdir -p "${pkgdir}/usr/share/fish/vendor_completions.d"
+  ./kustomize completion fish >  "${pkgdir}/usr/share/fish/vendor_completions.d/kustomize.fish"
+
+  # install binary
+  install -D kustomize "${pkgdir}/usr/bin/kustomize"
+}
+
+# vim: ts=2 sw=2 et:

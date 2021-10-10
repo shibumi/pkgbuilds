@@ -1,0 +1,62 @@
+# Maintainer Christian Rebischke <chris.rebischke@archlinux.org>
+# Maintainer: Fredy García <frealgagu at gmail dot com>
+# Maintainer: Maxim Baz <${pkgname} at maximbaz dot com>
+# Contributor: Stefan Cocora <stefan dot cocora at gmail dot com>
+
+pkgname=skaffold
+pkgver=1.32.0
+pkgrel=1
+pkgdesc="A command line tool that facilitates continuous development for Kubernetes applications"
+arch=("x86_64")
+url="https://github.com/GoogleContainerTools/${pkgname}"
+license=("Apache")
+depends=("docker")
+makedepends=("go")
+optdepends=(
+  "minikube: To use Minikube"
+  "kubectl: For Kubernetes support"
+  "bash-completion: Tab autocompletion"
+)
+source=(
+  "${pkgname}-${pkgver}.tar.gz::https://github.com/GoogleContainerTools/${pkgname}/archive/v${pkgver}.tar.gz"
+)
+sha256sums=('ea33655b42aa6da98ad614042c1368bab802e2b1cc1b3c6b19b5abf41c341bf9')
+b2sums=('ea6fc056232e94b72240641aaad568b233feadfbccf7a7dd5ad813f57a346f32f8c871d564d1011e0851b979ab788dc2d9a77e05c93f9ecc500b922fb5de3dd8')
+_commit="edd1d458902d64e51e17b83514e1fc693c248259"
+
+prepare() {
+  cd "${srcdir}/${pkgname}-${pkgver}"
+
+  rm -rf "${srcdir}/gopath"
+  mkdir -p "${srcdir}/gopath/bin"
+  mkdir -p "${srcdir}/gopath/src/github.com/GoogleContainerTools"
+  ln -rTsf "${srcdir}/${pkgname}-${pkgver}" "${srcdir}/gopath/src/github.com/GoogleContainerTools/${pkgname}"
+}
+
+build() {
+  cd "${srcdir}/gopath/src/github.com/GoogleContainerTools/${pkgname}"
+  export GOPATH="${srcdir}/gopath"
+  export PATH="${PATH}:${GOPATH}/bin"
+  export VERSION="v${pkgver}"
+  export COMMIT="${_commit}"
+  export TREE_STATE="clean"
+  export CGO_CPPFLAGS="${CPPFLAGS}"
+  export CGO_CFLAGS="${CFLAGS}"
+  export CGO_CXXFLAGS="${CXXFLAGS}"
+  export CGO_LDFLAGS="${LDFLAGS}"
+  export GOFLAGS="-buildmode=pie -mod=readonly -modcacherw -x -v -ldflags=-linkmode=external"
+  make install
+
+  # To avoid issues deleting directories next time
+  go clean --modcache
+
+  # Create completion files
+  "${srcdir}/gopath/bin/${pkgname}" completion bash > "${srcdir}/${pkgname}-completion.bash"
+  "${srcdir}/gopath/bin/${pkgname}" completion zsh > "${srcdir}/${pkgname}-completion.zsh"
+}
+
+package() {
+  install -Dm755 "${srcdir}/gopath/bin/${pkgname}" "${pkgdir}/usr/bin/${pkgname}"
+  install -Dm644 "${srcdir}/${pkgname}-completion.bash" "${pkgdir}/usr/share/bash-completion/completions/${pkgname}"
+  install -Dm644 "${srcdir}/${pkgname}-completion.zsh" "${pkgdir}/usr/share/zsh/site-functions/_skaffold"
+}

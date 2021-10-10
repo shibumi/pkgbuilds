@@ -1,0 +1,37 @@
+# Maintainer: Santiago Torres-Arias <santiago@archlinux.org>
+# Maintainer: Christian Rebischke <chris.rebischke@archlinux.org>
+
+pkgname=cosign
+pkgver=1.2.1
+pkgrel=1
+pkgdesc="Container Signing with support for ephemeral keys and Sigstore signing"
+arch=('x86_64')
+url="https://github.com/sigstore/cosign"
+license=('Apache')
+depends=('pcsclite')
+makedepends=('go' 'git')
+source=("${pkgname}-${pkgver}.tar.gz::https://github.com/sigstore/${pkgname}/archive/v${pkgver}.tar.gz")
+sha512sums=('b5a7d7eb77f171993425482da55fe8e53f0b4e267ef34aeadf2b31efbf40a67d86d256fd333a8210fcd01dfb11de1ed217aa4f7d70a2b72d7cbd8c302a482437')
+b2sums=('5b435cb343de466dd218e8dcf66c5169f6be939eef307a3d6c2e4fd1564b6a5671cafd08857f7be780de8c1dcc2d25ff4e608b51462e631d8f5de4fee04278c0')
+
+build(){
+  cd "${pkgname}-${pkgver}"
+  export CGO_CPPFLAGS="${CPPFLAGS}"
+  export CGO_CFLAGS="${CFLAGS}"
+  export CGO_CXXFLAGS="${CXXFLAGS}"
+  export CGO_LDFLAGS="${LDFLAGS}"
+  export GOFLAGS="-buildmode=pie -ldflags=-linkmode=external -trimpath -mod=readonly -modcacherw"
+  mkdir build
+  go build -o build/ ./...
+}
+
+check() {
+  cd "${pkgname}-${pkgver}"
+  make test
+}
+
+package() {
+  cd "${pkgname}-${pkgver}"
+  install -Dm755 build/cosign "${pkgdir}/usr/bin/${pkgname}"
+  install -Dm755 build/copasetic "${pkgdir}/usr/bin/copasetic"
+}

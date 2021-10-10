@@ -1,0 +1,43 @@
+# Maintainer: Christian Rebischke <chris.rebischke@archlinux.org>
+
+pkgname=helmfile
+pkgver=0.140.1
+pkgrel=1
+pkgdesc="Manage multiple helm charts with a single helmfile"
+arch=('x86_64')
+url="https://github.com/roboll/helmfile"
+license=('MIT')
+makedepends=('go')
+depends=('glibc')
+source=("${pkgname}-${pkgver}.tar.gz::https://github.com/roboll/helmfile/archive/v${pkgver}.tar.gz")
+sha512sums=('15867a465e168ba6ab03647a1ac81cf34f8bb928cea36bb538ef9e570c0f1ab13e41d4f38c4bd0b7b30dc1419926dff06afa54e7a72b313a3eb6bfbb3e5cf6ce')
+b2sums=('c11776a27ae9805bf0580c8eef8e036d9be08b9053e13c9b1f76b9ba1998805e1527eff272375c0d1f0a1ed460e8aea13929d53cf8db8e125d0a13dea3e17487')
+
+prepare() {
+  export GOPATH="${srcdir}"
+  mkdir -p src/github.com/roboll "${GOPATH}/bin"
+  mv "${pkgname}-${pkgver}" "src/github.com/roboll/${pkgname}"
+  export PACKAGE_ROOT="${GOPATH}/src/github.com/roboll/${pkgname}"
+}
+
+build() {
+  cd "${PACKAGE_ROOT}"
+  export CGO_ENABLED=1
+  export CGO_CPPFLAGS="${CPPFLAGS}"
+  export CGO_CFLAGS="${CFLAGS}"
+  export CGO_CXXFLAGS="${CXXFLAGS}"
+  export CGO_LDFLAGS="${LDFLAGS}"
+  export GOFLAGS="-buildmode=pie -trimpath -mod=readonly -modcacherw"
+  go build -v -ldflags "-linkmode=external -X github.com/roboll/helmfile/pkg/app/version.Version=${pkgver}" .
+  chmod +x ./helmfile
+}
+
+check() {
+  cd "${PACKAGE_ROOT}"
+  go test -v ./...
+}
+
+package() {
+  cd "${PACKAGE_ROOT}"
+  install -Dsm755 ./helmfile "${pkgdir}/usr/bin/helmfile"
+}

@@ -1,0 +1,44 @@
+# Maintainer: Christian Rebischke <chris.rebischke@archlinux.org>
+
+pkgname=operator-sdk
+pkgver=1.13.0
+pkgrel=1
+pkgdesc="SDK for building Kubernetes applications"
+arch=('x86_64')
+url="https://github.com/operator-framework/operator-sdk"
+license=('Apache')
+makedepends=('go')
+depends=('glibc')
+source=("${pkgname}-${pkgver}.tar.gz::https://github.com/operator-framework/operator-sdk/archive/v${pkgver}.tar.gz")
+sha512sums=('f4a01bd48f4627de37917636e5312c4e0652d7ce5d5bf115d0586ba98740837b5b60220a7ac8ba8d80210053ccf3489b150126f5306bedcd78d904ab902b5fa3')
+b2sums=('ab49f7f5c7bb550e867e85bbff27a17c4ceb3ba9de578f1558fcea42c84bc3d4783495ed9f51e414c4df2c3084b79ce17ddc3bf90277037e44c1791f007e6cec')
+
+prepare() {
+  export GOPATH="${srcdir}"
+  mkdir -p src/github.com/operator-framework "${GOPATH}/bin"
+  mv "${pkgname}-${pkgver}" "src/github.com/operator-framework/${pkgname}"
+  export PACKAGE_ROOT="${GOPATH}/src/github.com/operator-framework/${pkgname}"
+}
+
+build() {
+  cd "${PACKAGE_ROOT}"
+  export CGO_ENABLED=1
+  export CGO_CPPFLAGS="${CPPFLAGS}"
+  export CGO_CFLAGS="${CFLAGS}"
+  export CGO_CXXFLAGS="${CXXFLAGS}"
+  export CGO_LDFLAGS="${LDFLAGS}"
+  export GOFLAGS="-buildmode=pie -trimpath -mod=readonly -modcacherw"
+  go build -ldflags "-linkmode=external" -v -o . ./cmd/{operator-sdk,ansible-operator,helm-operator}
+}
+
+#check() {
+#  cd "${PACKAGE_ROOT}"
+#  go test -v ./...
+#}
+
+package() {
+  cd "${PACKAGE_ROOT}"
+  install -Dsm755 ./operator-sdk "${pkgdir}/usr/bin/operator-sdk"
+  install -Dsm755 ./ansible-operator "${pkgdir}/usr/bin/ansible-operator"
+  install -Dsm755 ./helm-operator "${pkgdir}/usr/bin/helm-operator"
+}
