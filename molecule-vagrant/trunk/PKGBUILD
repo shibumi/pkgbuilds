@@ -9,8 +9,7 @@ arch=('any')
 url="https://github.com/ansible-community/molecule-vagrant"
 license=('MIT')
 depends=('python' 'ansible' 'molecule' 'python-pyaml' 'python-vagrant')
-makedepends=('python-setuptools' 'python-setuptools-scm' 'molecule'
-'python-vagrant' 'python-pyaml')
+makedepends=('python-setuptools' 'python-setuptools-scm' 'python-pip')
 source=("${pkgname}-${pkgver}.tar.gz::https://github.com/ansible-community/molecule-vagrant/archive/${pkgver}.tar.gz")
 sha512sums=('8da5d444925d8dcb35abcaccb7b6f8e23492a61c5dd05a4cfd129801577b3df76cca87d8abccc1580742727b42f133731ab4720a13a3c553c3163957fb42df47')
 
