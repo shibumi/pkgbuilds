@@ -1,0 +1,35 @@
+# Maintainer: Christian Rebischke <chris.rebischke@archlinux.org>
+# Contributor: Stefan Tatschner <stefan@rumpelsepp.org>
+# Contributor: Gökberk Yaltıraklı <aur at gkbrk dot com>
+# Contributor: Drew DeVault <sir@cmpwn.com>
+
+pkgname=aerc
+pkgver=0.5.2
+pkgrel=2
+pkgdesc='Email Client for your Terminal'
+arch=('x86_64')
+url='https://git.sr.ht/~sircmpwn/aerc'
+license=('MIT')
+depends=('notmuch')
+makedepends=('go' 'git' 'scdoc')
+optdepends=('w3m: html viewer support' 'dante: proxy support')
+provides=('aerc')
+conflicts=('aerc')
+source=("$pkgname-$pkgver.tar.gz::https://git.sr.ht/~sircmpwn/${pkgname}/archive/${pkgver}.tar.gz")
+sha512sums=('b5472f204ee2226dffaefb1a1554644711e030bac227cb708510fc4eec46ecb7ab48b7e82b1400024d8893ef2d4b880edffd98fd10339459015c0bb27956d452')
+
+build() {
+    cd "$srcdir/$pkgname-$pkgver"
+    export CGO_LDFLAGS="${LDFLAGS}"
+    export CGO_CFLAGS="${CFLAGS}"
+    export CGO_CPPFLAGS="${CPPFLAGS}"
+    export CGO_CXXFLAGS="${CXXFLAGS}"
+    export GOFLAGS="-buildmode=pie -trimpath -modcacherw -tags=notmuch"
+    make PREFIX=/usr
+}
+
+package() {
+    cd "$srcdir/$pkgname-$pkgver"
+    make PREFIX=/usr DESTDIR=$pkgdir install
+    install -Dm644 LICENSE -t "$pkgdir/usr/share/licenses/aerc/"
+}

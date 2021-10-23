@@ -1,0 +1,51 @@
+# Maintainer: Daurnimator <daurnimator@archlinux.org>
+
+pkgname=argocd
+pkgver=2.1.5
+pkgrel=1
+pkgdesc="Declarative continuous deployment for Kubernetes"
+arch=('x86_64')
+url='https://argo-cd.readthedocs.io/en/stable/'
+license=('Apache')
+makedepends=('go')
+depends=('glibc')
+provides=('argocd-cli')
+replaces=('argocd-cli')
+source=("argo-cd-${pkgver}.tar.gz::https://github.com/argoproj/argo-cd/archive/v${pkgver}.tar.gz")
+sha512sums=('9e4c11d4ec26e57d36d753293c11df43dbf0f7395cec42cbd8e4e3d2131a98f6d766245adb11f9b40889911ed1a238188540303096d2f892b70b9059d54c2c38')
+
+build() {
+  cd "argo-cd-$pkgver"
+
+  export CGO_CPPFLAGS="${CPPFLAGS}"
+  export CGO_CFLAGS="${CFLAGS}"
+  export CGO_CXXFLAGS="${CXXFLAGS}"
+  export CGO_LDFLAGS="${LDFLAGS}"
+  go build -o argocd \
+    -trimpath \
+    -buildmode=pie \
+    -mod=readonly \
+    -modcacherw \
+    -ldflags "-X github.com/argoproj/argo-cd/v2/common.version=${pkgver} \
+              -X github.com/argoproj/argo-cd/v2/common.buildDate=$(date -u +'%Y-%m-%dT%H:%M:%SZ' --date=@${SOURCE_DATE_EPOCH}) \
+              -X github.com/argoproj/argo-cd/v2/common.gitTag=${pkgver} \
+              -linkmode=external \
+              -extldflags \"${LDFLAGS}\"" \
+    ./cmd
+
+  ./argocd completion bash > argocd.bash
+  ./argocd completion zsh > argocd.zsh
+}
+
+package() {
+  cd "argo-cd-$pkgver"
+
+  install -D argocd "$pkgdir/usr/bin/argocd"
+  ln -s argocd "$pkgdir/usr/bin/argocd-server"
+  ln -s argocd "$pkgdir/usr/bin/argocd-repo-server"
+  ln -s argocd "$pkgdir/usr/bin/argocd-application-controller"
+  ln -s argocd "$pkgdir/usr/bin/argocd-dex"
+
+  install -Dm644 argocd.bash "$pkgdir/usr/share/bash-completion/completions/argocd"
+  install -Dm644 argocd.zsh "$pkgdir/usr/share/zsh/site-functions/_argocd"
+}

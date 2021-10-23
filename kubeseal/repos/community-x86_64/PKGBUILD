@@ -1,0 +1,40 @@
+# Maintainer: Christian Rebischke <chris.rebischke@archlinux.org>
+# Contributor: sseneca <me at ssene dot ca>
+# Contributor: ml <ml@visu.li>
+
+pkgname=kubeseal
+_pkgname=sealed-secrets
+pkgver=0.16.0
+pkgrel=1
+pkgdesc="A Kubernetes controller and tool for one-way encrypted Secrets"
+arch=('x86_64')
+url="https://github.com/bitnami-labs/sealed-secrets"
+license=('Apache')
+makedepends=('go')
+depends=('glibc')
+source=("${url}/archive/v${pkgver}/${pkgname}-${pkgver}.tar.gz")
+sha512sums=('0d5338ff1d1e8ab4d7c6ee0ed42e7cf5ae4cf0bc05971e99994aef324d93e33ed5466a100240307881f86333516dab4ba4453c0c8dca87aa6f790088fb17d15d')
+
+build() {
+  cd "${_pkgname}-${pkgver}"
+  export CGO_CPPFLAGS="${CPPFLAGS}"
+  export CGO_CFLAGS="${CFLAGS}"
+  export CGO_CXXFLAGS="${CXXFLAGS}"
+  export CGO_LDFLAGS="${LDFLAGS}"
+  export CGO_LDFLAGS="${LDFLAGS}"
+  export GOFLAGS="-buildmode=pie -trimpath -mod=vendor -modcacherw"
+
+  go build -ldflags="-linkmode=external -X=main.VERSION=v${pkgver}" ./cmd/kubeseal
+}
+
+check() {
+  cd "${_pkgname}-${pkgver}"
+
+  go test ./cmd/kubeseal/... ./pkg/...
+}
+
+package() {
+  cd "${_pkgname}-${pkgver}"
+
+  install -Dm755 "$pkgname" "$pkgdir/usr/bin/$pkgname"
+}

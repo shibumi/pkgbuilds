@@ -1,0 +1,41 @@
+# Maintainer: Levente Polyak <anthraxx[at]archlinux[dot]org>
+# Maintainer: Christian Rebischke <Chris.Rebischke@archlinux.org>
+# Contributor: Andrea Scarpino <andrea@archlinux.org>
+
+pkgname=arch-audit
+pkgver=0.1.20
+pkgrel=1
+pkgdesc='A utility like pkg-audit based on Arch Security Team data'
+url='https://gitlab.com/ilpianista/arch-audit'
+depends=('glibc' 'gcc-libs' 'curl' 'libcurl.so' 'libalpm.so')
+makedepends=('cargo' 'pkg-config' 'scdoc')
+arch=('x86_64')
+license=('MIT')
+backup=('etc/arch-audit/settings.toml')
+source=("https://gitlab.com/ilpianista/arch-audit/-/archive/${pkgver}/arch-audit-${pkgver}.tar.gz")
+sha512sums=('e0bdd5adb3c44677d39c8e618c8c8f666f1e2caaead82fc666468c46b296cb4d15584939715995bc6d3d8f996bd3127478bc6008dbdef677fee80063f2bc059e')
+b2sums=('02ba56f1b4780da7e006ac25736afb6e0474502cc7d645b2eb48650c6d71878b1de349b9a072f2cd1d013254f68d79786d9195c98c520407e256e6fa9b63f2e4')
+
+build() {
+  cd "${pkgname}-${pkgver}"
+  cargo build --release --locked
+}
+
+check() {
+  cd "${pkgname}-${pkgver}"
+  cargo test --release --locked
+}
+
+package() {
+  cd "${pkgname}-${pkgver}"
+
+  make DESTDIR="${pkgdir}" PREFIX=/usr install
+
+  install -Dm 644 contrib/hooks/arch-audit.hook -t "${pkgdir}/usr/share/${pkgname}"
+  install -Dm 644 contrib/config/settings.toml -t "${pkgdir}/etc/arch-audit"
+
+  install -Dm 644 README.md -t "${pkgdir}/usr/share/doc/${pkgname}"
+  install -Dm 644 LICENSE -t "${pkgdir}/usr/share/licenses/${pkgname}"
+}
+
+# vim: ts=2 sw=2 et:
