@@ -1,0 +1,32 @@
+# Maintainer: Christian Rebischke <chris.rebischke@archlinux.org>
+# Maintainer: Levente Polyak <anthraxx[at]archlinux[dot]org>
+# Contributor: Ian Beringer <ian@ianberinger.com>
+
+pkgname=kubectx
+pkgver=0.9.4
+pkgrel=1
+pkgdesc='Utility to manage and switch between kubectl contexts and Kubernetes namespaces'
+url='https://github.com/ahmetb/kubectx'
+arch=('any')
+license=('Apache')
+depends=('bash' 'kubectl')
+provides=('kubectx' 'kubens')
+source=("${url}/archive/v${pkgver}/${pkgname}-${pkgver}.tar.gz")
+sha512sums=('edb5a05d5b32e486a227e8a4c98864a8dd1e0f3c325fd63a9c3f10ba3ca7a57420d3b1dda9d7674cdbf18fea9cfafbfabdc19c4e15ab1a2a18af967d8fd50997')
+b2sums=('127eb69c46f2d331c4854b7d935d0fb10c9bc08219d021f5a4b6710b0408eee586d584da47acb8eb415a3472655bc8c8e2e0748eba2a449d8c8dc458c98d32bf')
+
+package() {
+  cd "${pkgname}-${pkgver}"
+
+  install -Dm 755 -p kubectx kubens -t "${pkgdir}/usr/bin"
+
+  # completion
+  install -Dm 644 -p completion/kubectx.bash "${pkgdir}/usr/share/bash-completion/completions/kubectx"
+  install -Dm 644 -p completion/kubens.bash "${pkgdir}/usr/share/bash-completion/completions/kubens"
+  install -Dm 644 -p completion/kubectx.zsh "${pkgdir}/usr/share/zsh/site-functions/_kubectx"
+  install -Dm 644 -p completion/kubens.zsh "${pkgdir}/usr/share/zsh/site-functions/_kubens"
+  install -Dm 644 -p completion/kubectx.fish "${pkgdir}/usr/share/fish/vendor_completions.d/kubectx.fish"
+  install -Dm 644 -p completion/kubens.fish "${pkgdir}/usr/share/fish/vendor_completions.d/kubens.fish"
+}
+
+# vim: ts=2 sw=2 et:
