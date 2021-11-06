@@ -1,6 +1,6 @@
 # Maintainer: Christian Rebischke <chris.rebischke@archlinux.org>
 # Contributor: ml <>
-pkgname=kubectl-cert-manager
+pkgname=cmctl
 pkgver=1.6.1
 pkgrel=1
 pkgdesc='Automatically provision and manage TLS certificates in Kubernetes'
@@ -41,5 +41,5 @@ check() {
 
 package() {
   cd cert-manager-"$pkgver"
-  install -Dm755 ctl "$pkgdir"/usr/bin/kubectl-cert_manager
+  install -Dm755 ctl "$pkgdir"/usr/bin/cmctl
 }
