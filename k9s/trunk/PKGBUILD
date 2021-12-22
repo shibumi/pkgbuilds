@@ -20,7 +20,6 @@ pkgver() {
 
 build() {
   cd $pkgname
-  export GOPROXY="direct"
   export CGO_LDFLAGS="${LDFLAGS}"
   export CGO_CFLAGS="${CFLAGS}"
   export CGO_CPPFLAGS="${CPPFLAGS}"
