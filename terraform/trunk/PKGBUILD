@@ -11,6 +11,7 @@ arch=("x86_64")
 license=("MPL")
 makedepends=("go")
 depends=('glibc')
+options=('!lto')
 source=("$pkgname-$pkgver.tar.gz::https://github.com/hashicorp/terraform/archive/v$pkgver.tar.gz"
         "terraform.bash"
         "terraform.fish"
@@ -24,6 +25,11 @@ b2sums=('e96f6ae3933331c05a3a7b802b17d4b62a276610b6c2cf0f60fb9ee39f817d8887868ae
         'd3655f23ba8893d0f8c6cd5e8b42fae473ccfbc77d97b7424aa1f0d0057bfed6cb4d2505e74dd89099c39af6bc03b92eddedae5bb2821ff905d06b5e311be1f0'
         'd58712c8203e4a58ec68738f3d22457547a55d230018408400fd1ca433346171b72fa4a87f05efc93213c71f9757d3a8072149ca4e6894355e79f8cfae3bd55b')
 
+prepare() {
+	cd "$pkgname-$pkgver"
+	go mod download
+}
+
 build() {
 	cd "$pkgname-$pkgver"
 	export CGO_CPPFLAGS="${CPPFLAGS}"
@@ -31,6 +37,7 @@ build() {
 	export CGO_CXXFLAGS="${CXXFLAGS}"
 	export CGO_LDFLAGS="${LDFLAGS}"
 	export GOFLAGS="-buildmode=pie -trimpath -mod=readonly -modcacherw -ldflags=-linkmode=external"
+	export GOPROXY=off
 	go build -o terraform-binary
 }
 
