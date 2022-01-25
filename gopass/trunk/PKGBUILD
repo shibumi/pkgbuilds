@@ -11,9 +11,9 @@ makedepends=('go')
 optdepends=('xdotool: for typing passwords selected by dmenu'
             'xsel: clipboard support'
             'xclip: clipboard support')
+options=("!lto")
 source=("https://github.com/gopasspw/gopass/releases/download/v${pkgver}/gopass-${pkgver}.tar.gz")
 sha512sums=('207b49ed86751b5b17e95bf1734c16803ef0ba47714b2b7d1f08349a70af5aab7c6a48e9ff08d9730a72c46a0b1f0374933b273e5c16132096b3f827f3a2387b')
-options=('!lto')
 
 prepare(){
   sed -i 's|-gcflags="-trimpath=$(GOPATH)" -asmflags="-trimpath=$(GOPATH)"||' Makefile
