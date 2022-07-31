@@ -1,10 +1,10 @@
 # Maintainer: Christian Rebischke <chris.rebischke@archlinux.org>
-# Maintainer: Sven-Hendrik Haase <svenstaro@gmail.com>
+# Maintainer: Sven-Hendrik Haase <svenstaro@archlinux.org>
 # Contributor: Konrad Tegtmeier <konrad.tegtmeier+aur@gmail.com>
 
 _pkgname=cli
 pkgname=hcloud
-pkgver=1.29.5
+pkgver=1.30.1
 pkgrel=1
 pkgdesc="CLI for Hetzner Cloud"
 arch=('x86_64')
@@ -16,7 +16,7 @@ makedepends=('go-pie')
 depends=('glibc')
 provides=('hcloud')
 source=("$pkgname-$pkgver.tar.gz::https://github.com/hetznercloud/cli/archive/refs/tags/v${pkgver}.tar.gz")
-sha512sums=('85371934e526bbc7bb085dc892d53f9ca2a9d96c19d6918dcc4d75dc451b6cd592975659d727a15e7aacfa91c112dc4d4c21be7a538570509171574e1bdb3a7d')
+sha512sums=('82c854a40eec0cc0ecfc1b7b744674d2342b5f603e41903d327ff49e94aedf1c92415b89504be53d10cc1feb0ffe8198f4063924c1ef6ae1c3107a2a44a28c54')
 
 build() {
   export CGO_ENABLED=1
@@ -34,7 +34,7 @@ build() {
 
 check() {
   cd "cli-${pkgver}"
-  #go test -v -x ./...
+  # go test -v -x ./...
 }
 
 package() {

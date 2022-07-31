@@ -4,7 +4,7 @@
 # Contributor: Stefan Cocora <stefan dot cocora at gmail dot com>
 
 pkgname=skaffold
-pkgver=1.36.0
+pkgver=1.39.1
 pkgrel=1
 pkgdesc="A command line tool that facilitates continuous development for Kubernetes applications"
 arch=("x86_64")
@@ -20,8 +20,8 @@ optdepends=(
 source=(
   "${pkgname}-${pkgver}.tar.gz::https://github.com/GoogleContainerTools/${pkgname}/archive/v${pkgver}.tar.gz"
 )
-sha256sums=('0e6c3891e7d62d023094c7d985fe5aac86f07ed1e229817d0041d8646b3de833')
-b2sums=('2729d812366330d32f6d9f484654fac9a5a9098781d553c03d98ca79450dcd9061d503b9a3cac8257dc50122bf54587c7503fc53daec417cfc470f5a4e8ee342')
+sha256sums=('8716bb69853c721bc4e57e3912b8eb5b31bb1850300555fce238ebf7cf57c727')
+b2sums=('90d7eae9368d5b33514e62520f5028edaa69211ecc1c2937c966dc8e82c7f7fbed91660fba6d339cf5f4eb1967bb3366787c2b6e58c3e1cc03949eeb1c42fab1')
 _commit="189a55291c18ac850277134d2b8f3eaa2c4f7a1d"
 
 prepare() {
