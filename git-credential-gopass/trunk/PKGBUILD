@@ -8,10 +8,9 @@ arch=('x86_64')
 url="https://github.com/gopasspw/git-credential-gopass"
 license=('MIT')
 depends=('glibc')
-makedepends=('go' 'git')
-_commit="5449acee6f4b9c05193d0148862bb5d584cde1b2"
-source=("${pkgname}-${pkgver}::git+https://github.com/gopasspw/git-credential-gopass#commit=${_commit}")
-sha512sums=('SKIP')
+makedepends=('go')
+source=("${pkgname}-${pkgver}.tar.gz::https://github.com/gopasspw/git-credential-gopass/archive/refs/tags/v${pkgver}.tar.gz")
+sha512sums=('c344ea5655f44be17292254223792c12bc668bcbd0750c1d63a1347b3af8ee154c64862e9b56d427694841327c752f761abea4da62ec68d2d9f25bdeeefefcfa')
 options=('!lto')
 
 prepare(){
