@@ -4,8 +4,8 @@
 # Contributor: Allen Li <darkfeline at abagofapples.com>
 
 pkgname=flake8
-pkgver=4.0.1
-pkgrel=5
+pkgver=5.0.4
+pkgrel=1
 epoch=1
 pkgdesc="The modular source code checker: pep8, pyflakes and co"
 arch=('any')
@@ -15,7 +15,7 @@ depends=('python-pyflakes' 'python-mccabe' 'python-pycodestyle' 'python-entrypoi
 makedepends=('python-setuptools')
 checkdepends=('python-mock' 'python-pytest')
 source=("https://github.com/PyCQA/flake8/archive/$pkgver/$pkgname-$pkgver.tar.gz")
-sha512sums=('6a3749b6c23bc2417351829340ec212c3305bd6a740cb77d4309296031abaa150ccff64b456e847540eb05cf635ed65025d4835d8663af6c8903491034998313')
+sha512sums=('2e9f8bf2bbca1ab0b7cb0bc6aee53f7e12288194a80a8be915478061fd76adb8d270ee50383b45beb9d4dd1ee806f104e7bbf29f69b23a7cd88ee0902ff3e965')
 
 prepare() {
   sed -i -e 's/,<[0-9=.]*//' flake8-$pkgver/setup.cfg
